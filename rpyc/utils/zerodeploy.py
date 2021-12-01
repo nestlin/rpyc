@@ -34,6 +34,8 @@ here = os.path.dirname(__file__)
 os.chdir(here)
 
 def rmdir():
+    if os.path.basename(os.getcwd()) == "rpyc.cache":
+        return
     shutil.rmtree(here, ignore_errors = True)
 atexit.register(rmdir)
 
@@ -95,9 +97,16 @@ class DeployedServer(object):
         self._tmpdir_ctx = None
 
         rpyc_root = local.path(rpyc.__file__).up()
-        self._tmpdir_ctx = remote_machine.tempdir()
-        tmp = self._tmpdir_ctx.__enter__()
-        copy(rpyc_root, tmp / "rpyc")
+
+        if not remote_machine._path_glob("rpyc.cache", "."):
+            self._tmpdir_ctx = remote_machine.tempdir()
+            tmp = self._tmpdir_ctx.__enter__()
+            copy(rpyc_root, tmp / "rpyc")
+            remote_machine._path_move(tmp, tmp / "../rpyc.cache")
+            tmp = tmp / "../rpyc.cache"
+        else:
+            tmp = remote_machine.path("rpyc.cache")
+
 
         script = (tmp / "deployed-rpyc.py")
         modname, clsname = server_class.rsplit(".", 1)
