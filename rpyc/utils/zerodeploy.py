@@ -142,7 +142,7 @@ class DeployedServer(object):
             except Exception:
                 pass
             stdout, stderr = self.proc.communicate()
-            raise ProcessExecutionError(self.proc.argv, self.proc.returncode, BYTES_LITERAL(line) + stdout, stderr)
+            raise ProcessExecutionError(self.proc.argv, self.proc.returncode, BYTES_LITERAL(line or "") + stdout, stderr)
 
         if hasattr(remote_machine, "connect_sock"):
             # Paramiko: use connect_sock() instead of tunnels
