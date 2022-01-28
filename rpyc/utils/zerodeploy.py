@@ -102,8 +102,9 @@ class DeployedServer(object):
             self._tmpdir_ctx = remote_machine.tempdir()
             tmp = self._tmpdir_ctx.__enter__()
             copy(rpyc_root, tmp / "rpyc")
-            remote_machine._path_move(tmp, tmp / "../rpyc.cache")
-            tmp = tmp / "../rpyc.cache"
+            default_path = remote_machine.path()
+            remote_machine._path_move(tmp, default_path / "rpyc.cache")
+            tmp = default_path / "rpyc.cache"
         else:
             tmp = remote_machine.path("rpyc.cache")
 
